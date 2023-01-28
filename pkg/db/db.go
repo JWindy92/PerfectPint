@@ -14,22 +14,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type User struct {
-	gorm.Model
-	Name     string `json:"name"`
-	Email    string `gorm:"unique" json:"email"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
-}
-
-const (
-	host     = "localhost"
-	port     = 1111
-	user     = "postgres"
-	password = "dbpass"
-	dbname   = "postgres"
-)
-
 func buildConnString() string {
 	host := os.Getenv("PG_HOST")
 	port := os.Getenv("PG_PORT")
@@ -63,14 +47,4 @@ func GetDatabase() *gorm.DB {
 func CloseDatabase(connection *gorm.DB) {
 	sqldb := connection.DB()
 	sqldb.Close()
-}
-
-//* -------------------------------------------------------------------------- */
-//*                             Migration Functions                            */
-//* -------------------------------------------------------------------------- */
-
-func InitialMigration() {
-	connection := GetDatabase()
-	defer CloseDatabase(connection)
-	connection.AutoMigrate(User{})
 }

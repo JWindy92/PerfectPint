@@ -19,6 +19,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
+	db.InitialMigration()
 	conn := db.GetDatabase()
 	defer db.CloseDatabase(conn)
 
