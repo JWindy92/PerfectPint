@@ -4,11 +4,15 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/JWindy92/PerfectPint/pkg/api"
 	"github.com/JWindy92/PerfectPint/pkg/db"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
+type Request struct {
+	Message string `json:"message"`
+}
 type Response struct {
 	Message string `json:"message"`
 }
@@ -25,6 +29,9 @@ func main() {
 
 	router := gin.Default()
 	router.GET("/", index)
+
+	router.POST("/signup", api.SignUp)
+	router.POST("/login", api.Login)
 
 	router.Run("localhost:8080")
 }
