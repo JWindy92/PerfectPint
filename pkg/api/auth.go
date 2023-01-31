@@ -10,9 +10,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type Response struct {
+	Message string `json:"message"`
+}
 type Authentication struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+type Token struct {
+	Role        string `json:"role"`
+	Email       string `json:"email"`
+	TokenString string `json:"token"`
 }
 
 func SignUp(c *gin.Context) {
@@ -45,5 +53,46 @@ func SignUp(c *gin.Context) {
 }
 
 func Login(c *gin.Context) {
-	log.Println("Logging in")
+	var incoming_auth Authentication
+	c.BindJSON(&incoming_auth)
+
+	var conn = db.GetDatabase()
+	defer db.CloseDatabase(conn)
+
+	var db_user models.User
+	conn.Where("email = ?", incoming_auth.Email).First(&db_user)
+	if db_user.Email == "" {
+		var err models.Error
+		err = models.SetError(err, "Username or Password is incorrect")
+
+		c.IndentedJSON(http.StatusUnauthorized, err)
+		return
+	}
+
+	check := auth.CheckPasswordHash(incoming_auth.Password, db_user.Password)
+
+	if !check {
+		var err models.Error
+		err = models.SetError(err, "Username or Password is incorrect")
+
+		c.IndentedJSON(http.StatusUnauthorized, err)
+		return
+	}
+
+	//TODO: generate JWT and return
+	validToken, err := auth.GenerateJWT(db_user.Email, db_user.Role)
+	if err != nil {
+		var err models.Error
+		err = models.SetError(err, "Failed to generate token")
+
+		c.IndentedJSON(http.StatusUnauthorized, err)
+		return
+	}
+
+	var token Token
+	token.Email = db_user.Email
+	token.Role = db_user.Role
+	token.TokenString = validToken
+
+	c.IndentedJSON(http.StatusOK, token)
 }
