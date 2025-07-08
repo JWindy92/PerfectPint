@@ -30,7 +30,7 @@ func main() {
 
 	router := gin.Default()
 
-	routes.RegisterRoutes(router, handlers.NewDefaultUserHandler())
+	routes.RegisterRoutes(router, handlers.NewAuthPassthroughHandler(), handlers.NewDefaultUserHandler())
 	// router.GET("/", index)
 
 	// router.POST("/signup", api.SignUp)

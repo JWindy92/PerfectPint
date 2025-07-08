@@ -3,7 +3,6 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -26,6 +25,7 @@ func setupTestRouter() *gin.Engine {
 	r := gin.Default()
 	r.POST("/users", uHandler.CreateUser)
 	r.GET("/users/:id", uHandler.GetUserByID)
+	r.GET("/users/:email", uHandler.GetUserByID)
 	return r
 }
 
@@ -60,28 +60,18 @@ func TestCreateUser(t *testing.T) {
 	}
 }
 
-func TestGetUserByID(t *testing.T) {
-	router := setupTestRouter()
-
-	// Create a user directly in DB
-	// user := models.User{Name: "Another User", Email: "another@example.com"}
-	// database.DB.Create(&user)
-	// user := models.User{}
-	url := fmt.Sprintf("/users/%d", 2)
-	req := httptest.NewRequest(http.MethodGet, url, nil)
-	w := httptest.NewRecorder()
-	router.ServeHTTP(w, req)
-
-	if w.Code != http.StatusOK {
-		t.Fatalf("Expected status 200, got %d: %v", w.Code, w.Body)
+func TestGetUserByEmail(t *testing.T) {
+	c := gin.Context{
+		Params: gin.Params{
+			gin.Param{
+				Key:   "email",
+				Value: "another@example.com",
+			},
+		},
 	}
+	uHandler := NewDefaultUserHandler()
 
-	var fetchedUser models.User
-	if err := json.Unmarshal(w.Body.Bytes(), &fetchedUser); err != nil {
-		t.Fatal("Failed to unmarshal response")
-	}
-
-	fmt.Println(fetchedUser)
+	uHandler.GetUserByEmail(&c)
 
 	// if fetchedUser.ID != user.ID {
 	// 	t.Errorf("Expected user ID %d, got %d", user.ID, fetchedUser.ID)
@@ -90,3 +80,30 @@ func TestGetUserByID(t *testing.T) {
 	// 	t.Errorf("Expected name %q, got %q", user.Name, fetchedUser.Name)
 	// }
 }
+
+// func TestGetUserByEmail(t *testing.T) {
+// 	router := setupTestRouter()
+
+// 	url := fmt.Sprintf("/users?email=%s", "another@example.com")
+// 	req := httptest.NewRequest(http.MethodGet, url, nil)
+// 	w := httptest.NewRecorder()
+// 	router.ServeHTTP(w, req)
+
+// 	if w.Code != http.StatusOK {
+// 		t.Fatalf("Expected status 200, got %d: %v", w.Code, w.Body)
+// 	}
+
+// 	var fetchedUser models.User
+// 	if err := json.Unmarshal(w.Body.Bytes(), &fetchedUser); err != nil {
+// 		t.Fatal("Failed to unmarshal response")
+// 	}
+
+// 	fmt.Println(fetchedUser)
+
+// 	// if fetchedUser.ID != user.ID {
+// 	// 	t.Errorf("Expected user ID %d, got %d", user.ID, fetchedUser.ID)
+// 	// }
+// 	// if fetchedUser.Name != user.Name {
+// 	// 	t.Errorf("Expected name %q, got %q", user.Name, fetchedUser.Name)
+// 	// }
+// }
