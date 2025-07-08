@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/JWindy92/PerfectPint/internal/database"
+	"github.com/JWindy92/PerfectPint/internal/common"
 	"github.com/JWindy92/PerfectPint/internal/models"
 	"github.com/JWindy92/PerfectPint/internal/services"
 	"github.com/gin-gonic/gin"
@@ -22,9 +22,9 @@ type AuthPassthroughHandler struct {
 	UserService UserAuthInterface
 }
 
-func NewAuthPassthroughHandler() *AuthPassthroughHandler {
+func NewAuthPassthroughHandler(db common.DBInterface) *AuthPassthroughHandler {
 	return &AuthPassthroughHandler{
-		UserService: services.NewUserService(database.DB),
+		UserService: services.NewUserService(db.ConnectDB()),
 	}
 }
 

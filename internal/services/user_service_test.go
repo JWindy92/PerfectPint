@@ -3,17 +3,15 @@ package services
 import (
 	"testing"
 
+	"github.com/JWindy92/PerfectPint/internal/database"
 	"github.com/JWindy92/PerfectPint/internal/models"
 	"github.com/JWindy92/PerfectPint/internal/utils"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 func TestGetUserByEmail(t *testing.T) {
-	db, _ := gorm.Open(sqlite.Open("../../perfectpints.db?_cache=shared"), &gorm.Config{})
-	db.AutoMigrate(&models.User{})
-
-	service := NewUserService(db)
+	db := database.PostgresImpl{}
+	conn := db.ConnectDB()
+	service := NewUserService(conn)
 	testUser := models.User{Name: "Another User", Email: "another@example.com"}
 
 	user, err := service.GetUserByEmail("another@example.com")
@@ -30,4 +28,17 @@ func TestGetUserByEmail(t *testing.T) {
 	}
 
 	utils.PrettyPrint(user)
+}
+
+func TestCreateUser(t *testing.T) {
+	db := database.PostgresImpl{}
+	conn := db.ConnectDB()
+
+	service := NewUserService(conn)
+	testUser := models.User{Name: "One More User", Email: "onemore@example.com"}
+	// testUser := models.User{Name: "Another User", Email: "another@example.com"}
+
+	if err := service.CreateUser(&testUser); err != nil {
+		t.Fatalf("Failed to create user: %v", err)
+	}
 }

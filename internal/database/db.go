@@ -1,15 +1,22 @@
 package database
 
 import (
+	"fmt"
+
 	"github.com/JWindy92/PerfectPint/internal/models"
+	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
+// var DB *gorm.DB
 
-func ConnectDB() {
-	db, err := gorm.Open(sqlite.Open("perfectpint.db"), &gorm.Config{})
+type SQLiteImpl struct {
+	DB *gorm.DB
+}
+
+func (impl *SQLiteImpl) ConnectDB() *gorm.DB {
+	db, err := gorm.Open(sqlite.Open("../../perfectpint.db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -17,5 +24,38 @@ func ConnectDB() {
 	// db.AutoMigrate(&models.User{}, &models.Review{}, &models.Location{})
 	db.AutoMigrate(&models.User{})
 
-	DB = db
+	impl.DB = db
+	return db
+}
+
+type PostgresImpl struct {
+	DB *gorm.DB
+}
+
+func (impl *PostgresImpl) ConnectDB() *gorm.DB {
+	// Example: replace with real values or use environment variables
+	host := "localhost"
+	port := 5555
+	user := "postgres"
+	password := "dbpass"
+	dbname := "postgres"
+
+	dsn := fmt.Sprintf(
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname,
+	)
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic(fmt.Sprintf("failed to connect to Postgres: %v", err))
+	}
+
+	// err = db.AutoMigrate(&models.User{}, &models.Review{}, &models.Location{})
+	err = db.AutoMigrate(&models.User{})
+	if err != nil {
+		panic(fmt.Sprintf("failed to migrate schema: %v", err))
+	}
+
+	impl.DB = db
+	return db
 }

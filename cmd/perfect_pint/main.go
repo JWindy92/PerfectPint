@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/JWindy92/PerfectPint/internal/database"
 	"github.com/JWindy92/PerfectPint/internal/handlers"
 	"github.com/JWindy92/PerfectPint/internal/routes"
-	"github.com/JWindy92/PerfectPint/pkg/db"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -24,14 +24,15 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-
-	db.InitialMigration()
-	conn := db.GetDatabase()
-	defer db.CloseDatabase(conn)
+	db := database.SQLiteImpl{}
 
 	router := gin.Default()
 
-	routes.RegisterRoutes(router, handlers.NewAuthPassthroughHandler(), handlers.NewDefaultUserHandler())
+	routes.RegisterRoutes(
+		router,
+		handlers.NewAuthPassthroughHandler(&db),
+		handlers.NewDefaultUserHandler(&db),
+	)
 
 	router.Run("localhost:8080") //TODO: add config files
 }

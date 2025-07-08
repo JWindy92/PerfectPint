@@ -10,18 +10,14 @@ import (
 	"github.com/JWindy92/PerfectPint/internal/database"
 	"github.com/JWindy92/PerfectPint/internal/models"
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 func setupTestRouter() *gin.Engine {
 	gin.SetMode(gin.TestMode)
 
-	db, _ := gorm.Open(sqlite.Open("../../perfectpints.db?_cache=shared"), &gorm.Config{})
-	db.AutoMigrate(&models.User{})
-	database.DB = db
+	db := database.SQLiteImpl{}
 
-	uHandler := NewDefaultUserHandler()
+	uHandler := NewDefaultUserHandler(&db)
 	r := gin.Default()
 	r.POST("/users", uHandler.CreateUser)
 	r.GET("/users/:id", uHandler.GetUserByID)
@@ -58,27 +54,6 @@ func TestCreateUser(t *testing.T) {
 	if createdUser.Email != userPayload["email"] {
 		t.Errorf("Expected email %q, got %q", userPayload["email"], createdUser.Email)
 	}
-}
-
-func TestGetUserByEmail(t *testing.T) {
-	c := gin.Context{
-		Params: gin.Params{
-			gin.Param{
-				Key:   "email",
-				Value: "another@example.com",
-			},
-		},
-	}
-	uHandler := NewDefaultUserHandler()
-
-	uHandler.GetUserByEmail(&c)
-
-	// if fetchedUser.ID != user.ID {
-	// 	t.Errorf("Expected user ID %d, got %d", user.ID, fetchedUser.ID)
-	// }
-	// if fetchedUser.Name != user.Name {
-	// 	t.Errorf("Expected name %q, got %q", user.Name, fetchedUser.Name)
-	// }
 }
 
 // func TestGetUserByEmail(t *testing.T) {

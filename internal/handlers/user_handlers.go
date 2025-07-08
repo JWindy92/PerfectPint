@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/JWindy92/PerfectPint/internal/database"
+	"github.com/JWindy92/PerfectPint/internal/common"
 	"github.com/JWindy92/PerfectPint/internal/models"
 	"github.com/JWindy92/PerfectPint/internal/services"
 	"github.com/gin-gonic/gin"
@@ -19,9 +19,9 @@ type UserHandler struct {
 	Service UserServiceInterface //TODO: accept interface
 }
 
-func NewDefaultUserHandler() *UserHandler {
+func NewDefaultUserHandler(db common.DBInterface) *UserHandler {
 	return &UserHandler{
-		Service: services.NewUserService(database.DB),
+		Service: services.NewUserService(db.ConnectDB()),
 	}
 }
 

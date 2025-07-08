@@ -9,8 +9,8 @@ type UserService struct {
 	DB *gorm.DB
 }
 
-func NewUserService(db *gorm.DB) *UserService {
-	return &UserService{DB: db}
+func NewUserService(conn *gorm.DB) *UserService {
+	return &UserService{DB: conn}
 }
 
 func (s *UserService) CreateUser(user *models.User) error {
