@@ -14,6 +14,7 @@ import (
 type Request struct {
 	Message string `json:"message"`
 }
+
 type Response struct {
 	Message string `json:"message"`
 }
@@ -31,12 +32,8 @@ func main() {
 	router := gin.Default()
 
 	routes.RegisterRoutes(router, handlers.NewAuthPassthroughHandler(), handlers.NewDefaultUserHandler())
-	// router.GET("/", index)
 
-	// router.POST("/signup", api.SignUp)
-	// router.POST("/login", api.Login)
-
-	router.Run("localhost:8080")
+	router.Run("localhost:8080") //TODO: add config files
 }
 
 func index(c *gin.Context) {

@@ -10,13 +10,13 @@ import (
 )
 
 type UserServiceInterface interface {
-	GetUserByID(string) (models.User, error)
-	GetUserByEmail(string) (models.User, error)
+	GetUserByID(string) (*models.User, error)
+	GetUserByEmail(string) (*models.User, error)
 	CreateUser(*models.User) error
 }
 type UserHandler struct {
 	// DB      *gorm.DB
-	Service *services.UserService //TODO: accept interface
+	Service UserServiceInterface //TODO: accept interface
 }
 
 func NewDefaultUserHandler() *UserHandler {
