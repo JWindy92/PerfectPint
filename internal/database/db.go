@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/JWindy92/PerfectPint/internal/models"
 	"gorm.io/driver/postgres"
@@ -16,7 +17,9 @@ type SQLiteImpl struct {
 }
 
 func (impl *SQLiteImpl) ConnectDB() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("../../perfectpint.db"), &gorm.Config{})
+	dbPath := "../../perfectpint.db"
+	log.Printf("Connecting to SQLite DB %s\n", dbPath)
+	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -45,6 +48,7 @@ func (impl *PostgresImpl) ConnectDB() *gorm.DB {
 		host, port, user, password, dbname,
 	)
 
+	log.Printf("Connecting to Postgres DB: %s\n", dsn)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(fmt.Sprintf("failed to connect to Postgres: %v", err))

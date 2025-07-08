@@ -25,7 +25,7 @@ func RegisterRoutes(
 	r.POST("/login", auth.Login)
 
 	r.GET("/users/:id", users.GetUserByID)
-	r.GET("/users/:email", users.GetUserByEmail)
+	r.GET("/users", users.GetUserByEmail) //TODO: should make less ambiguous. Maybe implement a broader search function
 	r.POST("/users", users.CreateUser)
 
 	// r.GET("/reviews", controllers.GetReviews)

@@ -9,7 +9,7 @@ import (
 )
 
 func TestGetUserByEmail(t *testing.T) {
-	db := database.PostgresImpl{}
+	db := database.SQLiteImpl{}
 	conn := db.ConnectDB()
 	service := NewUserService(conn)
 	testUser := models.User{Name: "Another User", Email: "another@example.com"}
@@ -31,7 +31,7 @@ func TestGetUserByEmail(t *testing.T) {
 }
 
 func TestCreateUser(t *testing.T) {
-	db := database.PostgresImpl{}
+	db := database.SQLiteImpl{}
 	conn := db.ConnectDB()
 
 	service := NewUserService(conn)

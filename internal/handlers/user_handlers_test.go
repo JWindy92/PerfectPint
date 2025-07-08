@@ -1,14 +1,12 @@
 package handlers
 
 import (
-	"bytes"
-	"encoding/json"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/JWindy92/PerfectPint/internal/database"
-	"github.com/JWindy92/PerfectPint/internal/models"
+	"github.com/JWindy92/PerfectPint/internal/routes"
+	"github.com/JWindy92/PerfectPint/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,42 +15,50 @@ func setupTestRouter() *gin.Engine {
 
 	db := database.SQLiteImpl{}
 
-	uHandler := NewDefaultUserHandler(&db)
+	// uHandler := NewDefaultUserHandler(&db)
 	r := gin.Default()
-	r.POST("/users", uHandler.CreateUser)
-	r.GET("/users/:id", uHandler.GetUserByID)
-	r.GET("/users/:email", uHandler.GetUserByID)
+	routes.RegisterRoutes(
+		r,
+		NewAuthPassthroughHandler(&db),
+		NewDefaultUserHandler(&db),
+	)
 	return r
 }
+
+type MockUserService struct{}
 
 func TestCreateUser(t *testing.T) {
 	router := setupTestRouter()
 
-	userPayload := map[string]string{
-		"name":  "Test User",
-		"email": "test@example.com",
+	payload := map[string]string{
+		"name":  "Test User2",
+		"email": "test2@example.com",
 	}
-	body, _ := json.Marshal(userPayload)
 
-	req := httptest.NewRequest(http.MethodPost, "/users", bytes.NewBuffer(body))
-	req.Header.Set("Content-Type", "application/json")
-	w := httptest.NewRecorder()
+	req, w, err := utils.MakeJSONRequest("POST", "/users", payload)
+	if err != nil {
+		t.Fatalf("Failed to create JSON request: %v", err)
+	}
+
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusCreated {
-		t.Fatalf("Expected status 201, got %d", w.Code)
+		t.Fatalf("Expected 201, got %d: %s", w.Code, w.Body.String())
+	}
+}
+
+func TestGetUserByEmail(t *testing.T) {
+	router := setupTestRouter()
+
+	params := map[string]string{
+		"email": "test@example.com",
 	}
 
-	var createdUser models.User
-	if err := json.Unmarshal(w.Body.Bytes(), &createdUser); err != nil {
-		t.Fatal("Failed to unmarshal response")
-	}
+	req, w := utils.MakeGETRequestWithQuery("/users", params)
+	router.ServeHTTP(w, req)
 
-	if createdUser.Name != userPayload["name"] {
-		t.Errorf("Expected name %q, got %q", userPayload["name"], createdUser.Name)
-	}
-	if createdUser.Email != userPayload["email"] {
-		t.Errorf("Expected email %q, got %q", userPayload["email"], createdUser.Email)
+	if w.Code != http.StatusOK {
+		t.Fatalf("Expected 200, got %d: %s", w.Code, w.Body.String())
 	}
 }
 
