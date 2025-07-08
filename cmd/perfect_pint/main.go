@@ -4,7 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/JWindy92/PerfectPint/pkg/api"
+	"github.com/JWindy92/PerfectPint/internal/handlers"
+	"github.com/JWindy92/PerfectPint/internal/routes"
 	"github.com/JWindy92/PerfectPint/pkg/db"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -28,10 +29,12 @@ func main() {
 	defer db.CloseDatabase(conn)
 
 	router := gin.Default()
-	router.GET("/", index)
 
-	router.POST("/signup", api.SignUp)
-	router.POST("/login", api.Login)
+	routes.RegisterRoutes(router, handlers.NewDefaultUserHandler())
+	// router.GET("/", index)
+
+	// router.POST("/signup", api.SignUp)
+	// router.POST("/login", api.Login)
 
 	router.Run("localhost:8080")
 }
