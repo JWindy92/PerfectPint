@@ -1,6 +1,8 @@
 package services
 
 import (
+	"log"
+
 	"github.com/JWindy92/PerfectPint/internal/models"
 	"gorm.io/gorm"
 )
@@ -26,9 +28,12 @@ func (s *UserService) GetUserByID(id string) (*models.User, error) {
 }
 
 func (s *UserService) GetUserByEmail(email string) (*models.User, error) {
+	log.Printf("Attempting to find user with email: %s", email)
 	var user models.User
 	if err := s.DB.Where("email = ?", email).First(&user).Error; err != nil {
+		log.Println("No user found")
 		return nil, err
 	}
+	log.Println("User found")
 	return &user, nil
 }

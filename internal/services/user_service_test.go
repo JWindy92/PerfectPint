@@ -35,7 +35,7 @@ func TestCreateUser(t *testing.T) {
 	conn := db.ConnectDB()
 
 	service := NewUserService(conn)
-	testUser := models.User{Name: "One More User", Email: "onemore@example.com"}
+	testUser := models.User{Name: "Auth User", Email: "auth@example.com", PasswordHash: "12345"}
 	// testUser := models.User{Name: "Another User", Email: "another@example.com"}
 
 	if err := service.CreateUser(&testUser); err != nil {

@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func setupTestRouter() *gin.Engine {
+func SetupTestRouter() *gin.Engine {
 	gin.SetMode(gin.TestMode)
 
 	db := database.SQLiteImpl{}
@@ -28,11 +28,11 @@ func setupTestRouter() *gin.Engine {
 type MockUserService struct{}
 
 func TestCreateUser(t *testing.T) {
-	router := setupTestRouter()
+	router := SetupTestRouter()
 
 	payload := map[string]string{
-		"name":  "Test User2",
-		"email": "test2@example.com",
+		"name":  "Test User",
+		"email": "test@example.com",
 	}
 
 	req, w, err := utils.MakeJSONRequest("POST", "/users", payload)
@@ -48,7 +48,7 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestGetUserByEmail(t *testing.T) {
-	router := setupTestRouter()
+	router := SetupTestRouter()
 
 	params := map[string]string{
 		"email": "test@example.com",
