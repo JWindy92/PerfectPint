@@ -24,8 +24,8 @@ func (impl *SQLiteImpl) ConnectDB() *gorm.DB {
 		panic("failed to connect database")
 	}
 
-	// db.AutoMigrate(&models.User{}, &models.Review{}, &models.Location{})
-	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.User{}, &models.Review{}, &models.Location{})
+	// db.AutoMigrate(&models.User{})
 
 	impl.DB = db
 	return db
@@ -54,8 +54,8 @@ func (impl *PostgresImpl) ConnectDB() *gorm.DB {
 		panic(fmt.Sprintf("failed to connect to Postgres: %v", err))
 	}
 
-	// err = db.AutoMigrate(&models.User{}, &models.Review{}, &models.Location{})
-	err = db.AutoMigrate(&models.User{})
+	err = db.AutoMigrate(&models.User{}, &models.Review{}, &models.Location{})
+	// err = db.AutoMigrate(&models.User{})
 	if err != nil {
 		panic(fmt.Sprintf("failed to migrate schema: %v", err))
 	}

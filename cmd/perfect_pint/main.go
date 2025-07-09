@@ -32,6 +32,8 @@ func main() {
 		router,
 		handlers.NewAuthPassthroughHandler(&db),
 		handlers.NewDefaultUserHandler(&db),
+		handlers.NewDefaultReviewHandler(&db),
+		handlers.NewDefaultLocationHandler(&db),
 	)
 
 	router.Run("localhost:8080") //TODO: add config files

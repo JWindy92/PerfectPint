@@ -15,10 +15,22 @@ type UserInterface interface {
 	CreateUser(c *gin.Context)
 }
 
+type ReviewInterface interface {
+	GetReviewByID(c *gin.Context)
+	CreateReview(c *gin.Context)
+}
+
+type LocationInterface interface {
+	GetLocationByID(c *gin.Context)
+	CreateLocation(c *gin.Context)
+}
+
 func RegisterRoutes(
 	r *gin.Engine,
 	auth AuthInterface,
 	users UserInterface,
+	reviews ReviewInterface,
+	locs LocationInterface,
 ) {
 
 	r.POST("/signup", auth.SignUp)
@@ -28,9 +40,9 @@ func RegisterRoutes(
 	r.GET("/users", users.GetUserByEmail) //TODO: should make less ambiguous. Maybe implement a broader search function
 	r.POST("/users", users.CreateUser)
 
-	// r.GET("/reviews", controllers.GetReviews)
-	// r.POST("/reviews", controllers.CreateReview)
+	r.GET("/reviews/:id", reviews.GetReviewByID)
+	r.POST("/reviews", reviews.CreateReview)
 
-	// r.GET("/locations", controllers.GetLocations)
-	// r.POST("/locations", controllers.CreateLocation)
+	r.GET("/locations/:id", locs.GetLocationByID)
+	r.POST("/locations", locs.CreateLocation)
 }

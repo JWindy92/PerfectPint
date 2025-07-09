@@ -15,8 +15,7 @@ type UserServiceInterface interface {
 	CreateUser(*models.User) error
 }
 type UserHandler struct {
-	// DB      *gorm.DB
-	Service UserServiceInterface //TODO: accept interface
+	Service UserServiceInterface
 }
 
 func NewDefaultUserHandler(db common.DBInterface) *UserHandler {

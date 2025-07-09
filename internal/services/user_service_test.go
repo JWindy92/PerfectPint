@@ -12,9 +12,9 @@ func TestGetUserByEmail(t *testing.T) {
 	db := database.SQLiteImpl{}
 	conn := db.ConnectDB()
 	service := NewUserService(conn)
-	testUser := models.User{Name: "Another User", Email: "another@example.com"}
+	testUser := models.User{Name: "Auth User", Email: "auth@example.com"}
 
-	user, err := service.GetUserByEmail("another@example.com")
+	user, err := service.GetUserByEmail("auth@example.com")
 	if err != nil {
 		t.Fatalf("User not found: %v", err)
 	}
@@ -36,7 +36,6 @@ func TestCreateUser(t *testing.T) {
 
 	service := NewUserService(conn)
 	testUser := models.User{Name: "Auth User", Email: "auth@example.com", PasswordHash: "12345"}
-	// testUser := models.User{Name: "Another User", Email: "another@example.com"}
 
 	if err := service.CreateUser(&testUser); err != nil {
 		t.Fatalf("Failed to create user: %v", err)

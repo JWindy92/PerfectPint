@@ -13,8 +13,9 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
+	ID           uint `gorm:"primaryKey"`
 	Name         string
 	Email        string `gorm:"unique"`
 	PasswordHash string
-	// Reviews []Review
+	Reviews      []Review
 }
