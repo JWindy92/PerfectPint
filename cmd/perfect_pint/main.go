@@ -3,10 +3,12 @@ package main
 //TODO: Handle setting User "Name" field at signup ??
 import (
 	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/JWindy92/PerfectPint/internal/database"
 	"github.com/JWindy92/PerfectPint/internal/handlers"
+	"github.com/JWindy92/PerfectPint/internal/logging"
 	"github.com/JWindy92/PerfectPint/internal/routes"
 	"github.com/JWindy92/PerfectPint/internal/services"
 	"github.com/gin-contrib/cors"
@@ -23,6 +25,8 @@ type Response struct {
 }
 
 func main() {
+	logging.InitLogger()
+	slog.Info("Logger initialized")
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
