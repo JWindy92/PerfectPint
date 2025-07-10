@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/JWindy92/PerfectPint/internal/models"
+	"github.com/JWindy92/PerfectPint/internal/utils"
 	"gorm.io/gorm"
 )
 
@@ -16,6 +17,7 @@ func NewUserService(conn *gorm.DB) *UserService {
 }
 
 func (s *UserService) CreateUser(user *models.User) error {
+	utils.PrettyPrint(user)
 	return s.DB.Create(user).Error
 }
 

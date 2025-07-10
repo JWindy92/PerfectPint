@@ -54,7 +54,7 @@ func (impl *PostgresImpl) ConnectDB() *gorm.DB {
 		panic(fmt.Sprintf("failed to connect to Postgres: %v", err))
 	}
 
-	err = db.AutoMigrate(&models.User{}, &models.Review{}, &models.Location{})
+	err = db.AutoMigrate(&models.User{}, &models.Location{}, &models.Review{})
 	// err = db.AutoMigrate(&models.User{})
 	if err != nil {
 		panic(fmt.Sprintf("failed to migrate schema: %v", err))

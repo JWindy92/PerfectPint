@@ -32,7 +32,6 @@ func RegisterRoutes(
 	reviews ReviewInterface,
 	locs LocationInterface,
 ) {
-
 	r.POST("/signup", auth.SignUp)
 	r.POST("/login", auth.Login)
 

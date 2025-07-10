@@ -31,7 +31,7 @@ func TestGetUserByEmail(t *testing.T) {
 	router := SetupTestRouter()
 
 	params := map[string]string{
-		"email": "test@example.com",
+		"email": "testing@example.com",
 	}
 
 	req, w := utils.MakeGETRequestWithQuery("/users", params)

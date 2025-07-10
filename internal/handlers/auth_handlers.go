@@ -62,13 +62,35 @@ func (a *AuthPassthroughHandler) Login(c *gin.Context) {
 }
 
 func (a *AuthPassthroughHandler) SignUp(c *gin.Context) {
-	name := c.Query("name")
-	email := c.Query("email")
-	user := models.User{
-		Name:  name,
-		Email: email,
+	var req models.CreateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	a.UserService.CreateUser(&user)
+
+	utils.PrettyPrint(req)
+
+	user := models.User{
+		Name:         req.Name,
+		Email:        req.Email,
+		PasswordHash: hash(req.Password), // replace with actual hash function
+	}
+
+	if err := a.UserService.CreateUser(&user); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create user"})
+		return
+	}
+
+	utils.PrettyPrint(user)
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "user created",
+		"user": gin.H{
+			"id":    user.ID,
+			"name":  user.Name,
+			"email": user.Email,
+		},
+	})
 }
 
 func (a *AuthPassthroughHandler) comparePassword(pw string, hash string) bool {
@@ -77,4 +99,8 @@ func (a *AuthPassthroughHandler) comparePassword(pw string, hash string) bool {
 	} else {
 		return false
 	}
+}
+
+func hash(pw string) string {
+	return pw
 }

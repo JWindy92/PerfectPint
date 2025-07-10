@@ -6,6 +6,7 @@ import (
 	"github.com/JWindy92/PerfectPint/internal/common"
 	"github.com/JWindy92/PerfectPint/internal/models"
 	"github.com/JWindy92/PerfectPint/internal/services"
+	"github.com/JWindy92/PerfectPint/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -56,10 +57,18 @@ func (h *UserHandler) GetUserByEmail(c *gin.Context) {
 }
 
 func (h *UserHandler) CreateUser(c *gin.Context) {
-	var user models.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var req models.CreateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
+	}
+
+	utils.PrettyPrint(req)
+
+	user := models.User{
+		Name:         req.Name,
+		Email:        req.Email,
+		PasswordHash: hash(req.Password), // replace with actual hash function
 	}
 
 	if err := h.Service.CreateUser(&user); err != nil {
@@ -69,3 +78,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, user)
 }
+
+// func hash(pw string) string {
+// 	return pw
+// }
