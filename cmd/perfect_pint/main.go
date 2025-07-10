@@ -1,5 +1,6 @@
 package main
 
+//TODO: Handle setting User "Name" field at signup ??
 import (
 	"log"
 	"net/http"
@@ -7,6 +8,7 @@ import (
 	"github.com/JWindy92/PerfectPint/internal/database"
 	"github.com/JWindy92/PerfectPint/internal/handlers"
 	"github.com/JWindy92/PerfectPint/internal/routes"
+	"github.com/JWindy92/PerfectPint/internal/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -37,7 +39,7 @@ func main() {
 
 	routes.RegisterRoutes(
 		router,
-		handlers.NewAuthPassthroughHandler(&db),
+		handlers.NewAuthPassthroughHandler(&db, &services.DefaultPasswordHasher{}),
 		handlers.NewDefaultUserHandler(&db),
 		handlers.NewDefaultReviewHandler(&db),
 		handlers.NewDefaultLocationHandler(&db),

@@ -12,7 +12,7 @@ type AuthInterface interface {
 type UserInterface interface {
 	GetUserByID(c *gin.Context)
 	GetUserByEmail(c *gin.Context)
-	CreateUser(c *gin.Context)
+	// CreateUser(c *gin.Context)
 }
 
 type ReviewInterface interface {
@@ -37,7 +37,7 @@ func RegisterRoutes(
 
 	r.GET("/users/:id", users.GetUserByID)
 	r.GET("/users", users.GetUserByEmail) //TODO: should make less ambiguous. Maybe implement a broader search function
-	r.POST("/users", users.CreateUser)
+	// r.POST("/users", users.CreateUser) //TODO: not sure if this is unnecessary yet, but /login performs the creation of users
 
 	r.GET("/reviews/:id", reviews.GetReviewByID)
 	r.POST("/reviews", reviews.CreateReview)

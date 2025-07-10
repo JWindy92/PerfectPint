@@ -6,7 +6,6 @@ import (
 	"github.com/JWindy92/PerfectPint/internal/common"
 	"github.com/JWindy92/PerfectPint/internal/models"
 	"github.com/JWindy92/PerfectPint/internal/services"
-	"github.com/JWindy92/PerfectPint/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,6 +14,7 @@ type UserServiceInterface interface {
 	GetUserByEmail(string) (*models.User, error)
 	CreateUser(*models.User) error
 }
+
 type UserHandler struct {
 	Service UserServiceInterface
 }
@@ -56,28 +56,28 @@ func (h *UserHandler) GetUserByEmail(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func (h *UserHandler) CreateUser(c *gin.Context) {
-	var req models.CreateUserRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+// func (h *UserHandler) CreateUser(c *gin.Context) {
+// 	var req models.CreateUserRequest
+// 	if err := c.ShouldBindJSON(&req); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	utils.PrettyPrint(req)
+// 	utils.PrettyPrint(req)
 
-	user := models.User{
-		Name:         req.Name,
-		Email:        req.Email,
-		PasswordHash: hash(req.Password), // replace with actual hash function
-	}
+// 	user := models.User{
+// 		Name:         req.Name,
+// 		Email:        req.Email,
+// 		PasswordHash: hash(req.Password), // replace with actual hash function
+// 	}
 
-	if err := h.Service.CreateUser(&user); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create user"})
-		return
-	}
+// 	if err := h.Service.CreateUser(&user); err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create user"})
+// 		return
+// 	}
 
-	c.JSON(http.StatusCreated, user)
-}
+// 	c.JSON(http.StatusCreated, user)
+// }
 
 // func hash(pw string) string {
 // 	return pw

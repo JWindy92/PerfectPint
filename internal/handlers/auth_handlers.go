@@ -11,6 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type PasswordHashInterface interface {
+	Hash(string) (string, error)
+	CheckHash(pw string, hash string) bool
+}
+
 /* -------------------------------------------------------------------------- */
 /*                    Basic Auth Passthrough Implementation                   */
 /* -------------------------------------------------------------------------- */
@@ -24,11 +29,13 @@ type UserAuthInterface interface {
 // ! Not for production
 type AuthPassthroughHandler struct {
 	UserService UserAuthInterface
+	Hasher      PasswordHashInterface
 }
 
-func NewAuthPassthroughHandler(db common.DBInterface) *AuthPassthroughHandler {
+func NewAuthPassthroughHandler(db common.DBInterface, hasher PasswordHashInterface) *AuthPassthroughHandler {
 	return &AuthPassthroughHandler{
 		UserService: services.NewUserService(db.ConnectDB()),
+		Hasher:      hasher,
 	}
 }
 
@@ -45,7 +52,7 @@ func (a *AuthPassthroughHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("unexpected error: %v", err)})
 	}
 
-	if a.comparePassword(req.Password, user.PasswordHash) {
+	if a.Hasher.CheckHash(req.Password, user.PasswordHash) {
 		resp := models.LoginSuccess{
 			Message: "login successful",
 			Token:   "1234-567-891011",
@@ -69,11 +76,15 @@ func (a *AuthPassthroughHandler) SignUp(c *gin.Context) {
 	}
 
 	utils.PrettyPrint(req)
-
+	hash, err := a.Hasher.Hash(req.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unexpected error performing password hash"})
+		return
+	}
 	user := models.User{
 		Name:         req.Name,
 		Email:        req.Email,
-		PasswordHash: hash(req.Password), // replace with actual hash function
+		PasswordHash: hash, // replace with actual hash function
 	}
 
 	if err := a.UserService.CreateUser(&user); err != nil {
@@ -91,16 +102,4 @@ func (a *AuthPassthroughHandler) SignUp(c *gin.Context) {
 			"email": user.Email,
 		},
 	})
-}
-
-func (a *AuthPassthroughHandler) comparePassword(pw string, hash string) bool {
-	if hash == pw {
-		return true
-	} else {
-		return false
-	}
-}
-
-func hash(pw string) string {
-	return pw
 }
